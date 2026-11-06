@@ -8,10 +8,10 @@ export async function fetchHealth() {
 
 export type SupabaseConnectionState =
   | 'CONNECTED'
-  | 'DISCONNECTED'
-  | 'CONFIGURATION ERROR'
-  | 'DATABASE SCHEMA ERROR'
-  | 'DATABASE OPERATION ERROR';
+  | 'SUPABASE_CONNECTION_ERROR'
+  | 'CONFIGURATION_ERROR'
+  | 'DATABASE_SCHEMA_ERROR'
+  | 'BACKEND_ROUTE_ERROR';
 
 export interface SupabaseStatusResult {
   state: SupabaseConnectionState;
@@ -40,9 +40,27 @@ export interface DiagnosticStep {
 }
 
 export async function checkSupabaseStatus(): Promise<SupabaseStatusResult> {
-  const res = await fetch('/api/supabase/status');
-  if (!res.ok) throw new Error('Failed to fetch Supabase status');
-  return res.json();
+  try {
+    const res = await fetch('/api/supabase/status');
+    if (!res.ok) {
+      return {
+        state: 'BACKEND_ROUTE_ERROR',
+        configured: false,
+        connected: false,
+        url: 'HTTP ' + res.status,
+        message: `Backend API route error (HTTP ${res.status}: ${res.statusText}). Endpoint /api/supabase/status tidak ditemukan atau mengembalikan error pada host ini.`,
+      };
+    }
+    return await res.json();
+  } catch (err: any) {
+    return {
+      state: 'BACKEND_ROUTE_ERROR',
+      configured: false,
+      connected: false,
+      url: 'Network Error',
+      message: `Tidak dapat menghubungi backend API: ${err.message || 'Network error'}. Pastikan server backend /api aktif.`,
+    };
+  }
 }
 
 export async function runSupabaseDiagnosticSuite(): Promise<{

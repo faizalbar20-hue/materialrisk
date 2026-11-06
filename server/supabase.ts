@@ -26,10 +26,10 @@ const supabaseKey = (
 
 export type SupabaseConnectionState =
   | 'CONNECTED'
-  | 'DISCONNECTED'
-  | 'CONFIGURATION ERROR'
-  | 'DATABASE SCHEMA ERROR'
-  | 'DATABASE OPERATION ERROR';
+  | 'SUPABASE_CONNECTION_ERROR'
+  | 'CONFIGURATION_ERROR'
+  | 'DATABASE_SCHEMA_ERROR'
+  | 'BACKEND_ROUTE_ERROR';
 
 let supabaseClient: SupabaseClient | null = null;
 
@@ -56,7 +56,7 @@ export function isSupabaseConfigured(): boolean {
 }
 
 // -----------------------------------------------------------------------------
-// Real Connection Status Checker (Categorized to 5 States per Section 13)
+// Real Connection Status Checker (Categorized to Exact States per Section 4)
 // -----------------------------------------------------------------------------
 export async function testSupabaseConnection(): Promise<{
   state: SupabaseConnectionState;
@@ -78,11 +78,11 @@ export async function testSupabaseConnection(): Promise<{
 
   if (!supabaseUrl || !supabaseKey) {
     return {
-      state: 'CONFIGURATION ERROR',
+      state: 'CONFIGURATION_ERROR',
       configured: false,
       connected: false,
       url: maskedUrl,
-      message: 'SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY belum diisi di file .env. Sistem berjalan pada mode penyimpanan lokal.',
+      message: 'SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY belum diisi di environment variables. Sistem berjalan pada mode penyimpanan lokal.',
       tables: {
         upload_history: false,
         material_requirements: false,
@@ -96,7 +96,7 @@ export async function testSupabaseConnection(): Promise<{
 
   if (!supabaseUrl.startsWith('https://')) {
     return {
-      state: 'CONFIGURATION ERROR',
+      state: 'CONFIGURATION_ERROR',
       configured: false,
       connected: false,
       url: maskedUrl,
@@ -114,7 +114,7 @@ export async function testSupabaseConnection(): Promise<{
 
   if (!supabaseClient) {
     return {
-      state: 'DISCONNECTED',
+      state: 'SUPABASE_CONNECTION_ERROR',
       configured: true,
       connected: false,
       url: maskedUrl,
@@ -165,7 +165,7 @@ export async function testSupabaseConnection(): Promise<{
         .filter(([_, present]) => !present)
         .map(([name]) => name);
       return {
-        state: 'DATABASE SCHEMA ERROR',
+        state: 'DATABASE_SCHEMA_ERROR',
         configured: true,
         connected: false,
         url: maskedUrl,
@@ -175,7 +175,7 @@ export async function testSupabaseConnection(): Promise<{
     }
   } catch (err: any) {
     return {
-      state: 'DISCONNECTED',
+      state: 'SUPABASE_CONNECTION_ERROR',
       configured: true,
       connected: false,
       url: maskedUrl,

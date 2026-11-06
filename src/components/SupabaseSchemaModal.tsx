@@ -51,7 +51,7 @@ export const SupabaseSchemaModal: React.FC<SupabaseSchemaModalProps> = ({ isOpen
       setStatus(res);
     } catch (err: any) {
       setStatus({
-        state: 'DISCONNECTED',
+        state: 'BACKEND_ROUTE_ERROR',
         configured: false,
         connected: false,
         url: '',
@@ -255,7 +255,7 @@ END $$;`;
     setTimeout(() => setCopiedEnv(false), 2000);
   };
 
-  // State color mapping per Section 13
+  // State color mapping per Section 4
   const getStateColor = (state?: string) => {
     switch (state) {
       case 'CONNECTED':
@@ -264,19 +264,27 @@ END $$;`;
           badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
           dot: 'bg-emerald-400 animate-pulse',
         };
+      case 'DATABASE_SCHEMA_ERROR':
       case 'DATABASE SCHEMA ERROR':
         return {
           bg: 'bg-amber-950/30 border-amber-800/50 text-amber-300',
           badge: 'bg-amber-500/20 text-amber-400 border-amber-500/40',
           dot: 'bg-amber-400',
         };
+      case 'CONFIGURATION_ERROR':
       case 'CONFIGURATION ERROR':
         return {
           bg: 'bg-blue-950/30 border-blue-800/50 text-blue-300',
           badge: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
           dot: 'bg-blue-400',
         };
-      case 'DATABASE OPERATION ERROR':
+      case 'BACKEND_ROUTE_ERROR':
+        return {
+          bg: 'bg-purple-950/30 border-purple-800/50 text-purple-300',
+          badge: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
+          dot: 'bg-purple-400',
+        };
+      case 'SUPABASE_CONNECTION_ERROR':
       case 'DISCONNECTED':
       default:
         return {
