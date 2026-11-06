@@ -1,0 +1,6 @@
+{
+  "name": "PPIC Material Recapitulation & Risk Control",
+  "description": "Sistem Rekapitulasi Kebutuhan Material PPIC, Kontrol Kesiapan Produksi, Manajemen Jadwal, Pareto Kekurangan, dan Analisis Risiko Berbasis AI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
